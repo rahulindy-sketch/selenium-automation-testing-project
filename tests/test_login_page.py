@@ -1,19 +1,10 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+def test_login_page(setup):
+    driver = setup
 
-driver = webdriver.Chrome()
+    username = driver.find_element("id", "user-name")
+    password = driver.find_element("id", "password")
+    login_button = driver.find_element("id", "login-button")
 
-driver.maximize_window()
-
-driver.get("https://www.saucedemo.com")
-
-username = driver.find_element(By.ID, "user-name")
-password = driver.find_element(By.ID, "password")
-login_button = driver.find_element(By.ID, "login-button")
-
-if username.is_displayed() and password.is_displayed() and login_button.is_displayed():
-    print("✅ Test Passed - Login page loaded successfully")
-else:
-    print("❌ Test Failed")
-
-driver.quit()
+    assert username.is_displayed()
+    assert password.is_displayed()
+    assert login_button.is_displayed()

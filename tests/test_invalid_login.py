@@ -1,21 +1,14 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-driver = webdriver.Chrome()
+def test_invalid_login(setup):
+    driver = setup
 
-driver.maximize_window()
+    # Enter invalid credentials
+    driver.find_element(By.ID, "user-name").send_keys("standard_user")
+    driver.find_element(By.ID, "password").send_keys("wrong_password")
+    driver.find_element(By.ID, "login-button").click()
 
-driver.get("https://www.saucedemo.com")
+    # Capture error message
+    error = driver.find_element(By.CSS_SELECTOR, "[data-test='error']")
 
-driver.find_element(By.ID, "user-name").send_keys("standard_user")
-driver.find_element(By.ID, "password").send_keys("wrong_password")
-driver.find_element(By.ID, "login-button").click()
-
-error = driver.find_element(By.CSS_SELECTOR, "[data-test='error']")
-
-if error.is_displayed():
-    print("✅ Test Passed - Error message displayed for invalid login")
-else:
-    print("❌ Test Failed")
-
-driver.quit()
+    assert error.is_displayed()

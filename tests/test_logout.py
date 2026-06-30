@@ -1,33 +1,22 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-driver = webdriver.Chrome()
+def test_logout(setup):
+    driver = setup
+    wait = WebDriverWait(driver, 15)
 
-driver.maximize_window()
+    driver.find_element(By.ID, "user-name").send_keys("standard_user")
+    driver.find_element(By.ID, "password").send_keys("secret_sauce")
+    driver.find_element(By.ID, "login-button").click()
 
-driver.get("https://www.saucedemo.com")
+    # Wait + open menu
+    wait.until(EC.element_to_be_clickable((By.ID, "react-burger-menu-btn"))).click()
 
-# Login
-driver.find_element(By.ID, "user-name").send_keys("standard_user")
-driver.find_element(By.ID, "password").send_keys("secret_sauce")
-driver.find_element(By.ID, "login-button").click()
+    # Wait for logout button fully visible (NOT just clickable)
+    wait.until(EC.visibility_of_element_located((By.ID, "logout_sidebar_link"))).click()
 
-# Open menu
-driver.find_element(By.ID, "react-burger-menu-btn").click()
+    # IMPORTANT: wait for login page reset properly
+    wait.until(EC.visibility_of_element_located((By.ID, "login-button")))
 
-# WAIT for menu animation
-time.sleep(2)
-
-# Click logout
-driver.find_element(By.ID, "logout_sidebar_link").click()
-
-# Verify logout
-login_button = driver.find_element(By.ID, "login-button")
-
-if login_button.is_displayed():
-    print("✅ Test Passed - Logout successful")
-else:
-    print("❌ Test Failed")
-
-driver.quit()
+    assert driver.find_element(By.ID, "login-button").is_displayed()

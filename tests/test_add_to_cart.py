@@ -1,26 +1,17 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-driver = webdriver.Chrome()
+def test_add_to_cart(setup):
+    driver = setup
 
-driver.maximize_window()
+    # Login
+    driver.find_element(By.ID, "user-name").send_keys("standard_user")
+    driver.find_element(By.ID, "password").send_keys("secret_sauce")
+    driver.find_element(By.ID, "login-button").click()
 
-driver.get("https://www.saucedemo.com")
+    # Add product to cart
+    driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack").click()
 
-# Login
-driver.find_element(By.ID, "user-name").send_keys("standard_user")
-driver.find_element(By.ID, "password").send_keys("secret_sauce")
-driver.find_element(By.ID, "login-button").click()
+    # Verify cart badge
+    cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge")
 
-# Add Backpack to Cart
-driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack").click()
-
-# Verify Cart Badge
-cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge")
-
-if cart_badge.text == "1":
-    print("✅ Test Passed - Product added to cart successfully")
-else:
-    print("❌ Test Failed")
-
-driver.quit()
+    assert cart_badge.text == "1"
